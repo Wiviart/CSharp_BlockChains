@@ -1,4 +1,6 @@
-﻿BlockChain blockChain = new BlockChain();
+﻿using BlockChains;
+
+var blockChain = new BlockChain();
 
 blockChain.AddBlock(new { from = "John", to = "Doe", amount = 100 });
 blockChain.AddBlock("Second block");

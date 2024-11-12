@@ -1,37 +1,39 @@
-class BlockChain
+namespace BlockChains;
+
+internal class BlockChain
 {
-    private List<Block> chain;
+    private List<Block> Chain { get; }
+
     public BlockChain()
     {
-        Block block = new Block(null, new { isGenesis = true });
-        chain = new List<Block> { block };
+        var block = new Block(null, new { isGenesis = true });
+        Chain = new List<Block> { block };
     }
 
     public BlockChain(List<Block> loadedChain)
     {
-        chain = loadedChain;
+        Chain = loadedChain;
     }
 
-    Block GetLastBlock()
+    private Block GetLastBlock()
     {
-        return chain.Last();
+        return Chain.Last();
     }
 
     public void AddBlock(dynamic data)
     {
-        Block lastBlock = GetLastBlock();
-        Block block = new Block(lastBlock, data);
+        var lastBlock = GetLastBlock();
+        var block = new Block(lastBlock, data);
 
         block.Mine(difficulty: 2);
 
-        chain.Add(block);
+        Chain.Add(block);
     }
 
-    public List<Block> GetChain() => chain;
 
     public void PrintChain()
     {
-        foreach (Block block in chain)
+        foreach (var block in Chain)
         {
             Console.WriteLine(block.GetData());
         }
@@ -39,10 +41,10 @@ class BlockChain
 
     public bool IsValid()
     {
-        for (int i = 1; i < chain.Count; i++)
+        for (var i = 1; i < Chain.Count; i++)
         {
-            Block currentBlock = chain[i];
-            Block previousBlock = chain[i - 1];
+            var currentBlock = Chain[i];
+            var previousBlock = Chain[i - 1];
             if (currentBlock.IsValid() == false)
             {
                 return false;

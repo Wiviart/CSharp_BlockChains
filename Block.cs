@@ -4,33 +4,29 @@ using System.Text.Json;
 
 class Block
 {
-    private Block? previousBlock;
-    public Block? PreviousBlock => previousBlock;
+    public Block? PreviousBlock { get; }
+
     private dynamic data;
     private DateTime timestamp;
-    private string hash;
-    public string Hash => hash;
+    public string Hash { get; private set; }
+
     private int mineValue;
 
     public Block(Block? previousBlock, dynamic data)
     {
-        this.previousBlock = previousBlock;
+        this.PreviousBlock = previousBlock;
         this.data = data;
         this.timestamp = DateTime.Now;
-        this.hash = CalculateHash();
+        this.Hash = CalculateHash();
         this.mineValue = 0;
     }
 
     public string CalculateHash()
     {
-        string rawData = $"{GetPreviousBlockHash() + data + timestamp + mineValue}";
-
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(rawData);
-            byte[] hashBytes = sha256.ComputeHash(bytes);
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-        }
+        var rawData = $"{GetPreviousBlockHash() + data + timestamp + mineValue}";
+        var bytes = Encoding.UTF8.GetBytes(rawData);
+        var hashBytes = SHA256.HashData(bytes);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
     }
 
     public string GetData()
@@ -41,7 +37,7 @@ class Block
                 previousBlock = GetPreviousBlockHash(),
                 data,
                 timestamp,
-                hash,
+                Hash,
                 mineValue
             }
         );
@@ -49,12 +45,12 @@ class Block
 
     public string GetPreviousBlockHash()
     {
-        return previousBlock?.Hash ?? "0000";
+        return PreviousBlock?.Hash ?? "0000";
     }
 
     public bool IsValid()
     {
-        return hash == CalculateHash();
+        return Hash == CalculateHash();
     }
 
     public bool IsPreviousBlockValid(Block block)
@@ -65,10 +61,10 @@ class Block
     public void Mine(int difficulty)
     {
         string compareString = new string('0', difficulty);
-        while (hash.Substring(0, difficulty) != compareString)
+        while (Hash[..difficulty] != compareString)
         {
             mineValue++;
-            hash = CalculateHash();
+            Hash = CalculateHash();
         }
     }
 }
